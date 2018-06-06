@@ -91,6 +91,7 @@ public class Alert_SMS extends Activity {
             public void run() {
 
                 while (latitude==null || longitude==null){
+
                     
                 }
 
