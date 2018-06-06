@@ -92,7 +92,6 @@ public class Alert_SMS extends Activity {
 
                 while (latitude==null || longitude==null){
 
-
                 }
 
                 for(int i=0;i<tinyDB.getListString("NumbersOnly").size();i++) {
