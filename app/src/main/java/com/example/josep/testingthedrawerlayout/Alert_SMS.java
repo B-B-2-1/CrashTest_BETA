@@ -90,6 +90,10 @@ public class Alert_SMS extends Activity {
             @Override
             public void run() {
 
+                while (latitude==null || longitude==null){
+                    
+                }
+
                 for(int i=0;i<tinyDB.getListString("NumbersOnly").size();i++) {
                     smsManager.sendTextMessage(arrayList.get(i), null, "Help! I've met with an accident at http://maps.google.com/?q="+latitude+"," + longitude, null, null);
                 }
