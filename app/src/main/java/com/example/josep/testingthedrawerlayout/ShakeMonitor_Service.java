@@ -1,17 +1,22 @@
 package com.example.josep.testingthedrawerlayout;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
+
+import java.util.Objects;
 
 public class ShakeMonitor_Service extends Service implements SensorEventListener {
 
@@ -32,11 +37,41 @@ public class ShakeMonitor_Service extends Service implements SensorEventListener
     private long mLastForce;
     private boolean vibration_status=true;
     private SharedPreferences settingsPrefs;
+    private BroadcastReceiver broadcastReceiver;
+    private String Fix;
+    private double final_speed;
+    private boolean in_speed=false;
+    private Handler handler= new Handler();
+    private boolean handler_running=false;
 
 
     @Override
     public void onCreate() {
         settingsPrefs=getSharedPreferences("Settings",MODE_PRIVATE);
+
+        if (broadcastReceiver == null) {
+            broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+
+                    Fix = Objects.requireNonNull(Objects.requireNonNull(intent.getExtras()).get("Fix")).toString();    // Data is sent as a string seperated by commas
+                    String[] GPS_data = Fix.split(",");
+                    final_speed= (Double.valueOf(GPS_data[2]))*3.60;
+                    if(final_speed > 20.00){
+                        handler.removeCallbacks(runnable);
+                        handler_running= false;
+                        in_speed = true;
+                    }
+                    else{
+                        if(!handler_running) {
+                            handler.postDelayed(runnable, 20000);
+                            handler_running= true;
+                        }
+                    }
+                }
+            };
+        }
+        registerReceiver(broadcastReceiver, new IntentFilter("location_update"));
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -73,7 +108,9 @@ public class ShakeMonitor_Service extends Service implements SensorEventListener
                 if ((++mShakeCount >= SHAKE_COUNT) && (now - mLastShake > SHAKE_DURATION)) {
                     mLastShake = now;
                     mShakeCount = 0;
-                   shaked();
+                    if(in_speed) {
+                        shaked();
+                    }
                 }
                 mLastForce = now;
             }
@@ -86,10 +123,15 @@ public class ShakeMonitor_Service extends Service implements SensorEventListener
 
     }
 
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
     public void shaked() {
         vibration_status=settingsPrefs.getBoolean("isVibrationOn",true);
         if(vibration_status) {
-        final Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            final Vibrator vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             vib.vibrate(1000);
         }
         Intent i = new Intent();
@@ -98,20 +140,26 @@ public class ShakeMonitor_Service extends Service implements SensorEventListener
         startActivity(i);
     }
 
+    Runnable runnable= new Runnable() {
+        @Override
+        public void run() {
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
+            in_speed= false;
+        }
+    };
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
 
         if(sensorManager!= null){
             sensorManager.unregisterListener(ShakeMonitor_Service.this, accelerometer);
             sensorManager =null;
         }
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+        }
+        super.onDestroy();
+
     }
+
 }

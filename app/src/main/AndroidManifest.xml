@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature
         android:name="android.hardware.sensor.accelerometer"
@@ -19,6 +20,15 @@
         android:roundIcon="@drawable/bikeicon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <receiver android:enabled="true" android:name=".BootUpReceiver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".FlashScreen"
             android:hardwareAccelerated="false"
@@ -60,6 +70,9 @@
             android:theme="@style/Theme.AppCompat.Light.Dialog.Alert"
             android:autoRemoveFromRecents="true">
         </activity>
+
+
+
     </application>
 
 </manifest>

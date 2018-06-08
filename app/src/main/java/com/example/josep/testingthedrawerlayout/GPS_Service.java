@@ -38,7 +38,7 @@ public class GPS_Service extends Service {
                     calculatedSpeed = lastLocation.distanceTo(location) / elapsedTime;
                 }
                 this.lastLocation = location;
-                if(location.hasSpeed()&&location.getSpeed()>0){
+                if(location.hasSpeed()){
                     finalspeed=location.getSpeed();
                 }
                 else{
