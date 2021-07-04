@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.josep.testingthedrawerlayout.SettingsActivity">
+    tools:context="com.nitc.crash.detectionapp.SettingsActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.example.josep.testingthedrawerlayout;
+package com.nitc.crash.detectionapp;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -8,15 +8,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,12 +30,14 @@ public class Alert_SMS extends Activity {
     private String latitude;
     private String longitude;
     private TinyDB tinyDB;
+    final SmsManager smsManager = SmsManager.getDefault();
     private String speed;
     private String test;
     private ArrayList<String> arrayList,numbersOnly;
     private long  alert_delay=1000;
     private SharedPreferences settingsPrefs;
     final Handler handler = new Handler();
+    private int numberOfContacts=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,6 @@ public class Alert_SMS extends Activity {
         setContentView(R.layout.alert_sms_new);
         getWindow().setGravity(Gravity.TOP|Gravity.CENTER);
         TextView textView = findViewById(R.id.textView3);
-        final SmsManager smsManager = SmsManager.getDefault();
         setFinishOnTouchOutside(false);                         ////Don't Dismiss Activity on touching ouside the box
 
         settingsPrefs=getSharedPreferences("Settings",MODE_PRIVATE);
@@ -68,7 +66,7 @@ public class Alert_SMS extends Activity {
         }
         tinyDB=new TinyDB(getApplicationContext());
         arrayList= tinyDB.getListString("NumbersOnly");
-
+        numberOfContacts=tinyDB.getListString("NumbersOnly").size();
         if (broadcastReceiver1 == null) {
             broadcastReceiver1 = new BroadcastReceiver() {
                 @Override
@@ -84,35 +82,7 @@ public class Alert_SMS extends Activity {
             };
         }
         registerReceiver(broadcastReceiver1, new IntentFilter("location_update"));
-
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                while (latitude==null || longitude==null){
-
-                }
-
-                for(int i=0;i<tinyDB.getListString("NumbersOnly").size();i++) {
-                    smsManager.sendTextMessage(arrayList.get(i), null, "Help! I've met with an accident at http://maps.google.com/?q="+latitude+"," + longitude, null, null);
-                }
-                finish();
-
-            }
-        }, alert_delay);
-
-    /*    Button dismiss = (Button) findViewById(R.id.dismiss);
-        dismiss.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               handler.removeCallbacksAndMessages(null);
-               finish();
-           }
-       });
-*/
-
-
+        handler.postDelayed(runnable, alert_delay);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Dragging Cancel Layout>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         GifImageView greenbutton=findViewById(R.id.greenButInPopupGif);
@@ -120,13 +90,27 @@ public class Alert_SMS extends Activity {
         bluebutton.setOnTouchListener(new ChoiceTouchListener());
         greenbutton.setOnDragListener(new ChoiceDragListener());
 
-
-
-
-
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Dragging Cancel Layout>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
     }
+    Runnable runnable= new Runnable()
+    {
+        @Override
+        public void run() {
+
+            if(latitude==null||longitude==null){
+                handler.postDelayed(runnable, alert_delay);
+            }
+            else {
+                for (int i = 0; i <numberOfContacts; i++) {
+                    smsManager.sendTextMessage(arrayList.get(i), null, "Help! I've met with an accident at http://maps.google.com/?q=" + latitude + "," + longitude, null, null);
+                }
+                handler.removeCallbacks(runnable);
+                finish();
+            }
+        }
+    };
+
     private final class ChoiceTouchListener implements View.OnTouchListener {
 
         @Override
@@ -184,6 +168,7 @@ public class Alert_SMS extends Activity {
 
     @Override
     public void onBackPressed() {
+
 
     }
 }
