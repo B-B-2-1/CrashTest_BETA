@@ -1,4 +1,4 @@
-package com.example.josep.testingthedrawerlayout;
+package com.nitc.crash.detectionapp;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 import java.util.Objects;
 

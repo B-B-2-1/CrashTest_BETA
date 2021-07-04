@@ -1,4 +1,4 @@
-package com.example.josep.testingthedrawerlayout;
+package com.nitc.crash.detectionapp;
 
 import android.app.ActivityManager;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 public class SettingsActivity extends AppCompatActivity {
 

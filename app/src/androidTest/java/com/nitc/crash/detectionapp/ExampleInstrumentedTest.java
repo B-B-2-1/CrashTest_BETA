@@ -1,4 +1,4 @@
-package com.example.josep.testingthedrawerlayout;
+package com.nitc.crash.detectionapp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

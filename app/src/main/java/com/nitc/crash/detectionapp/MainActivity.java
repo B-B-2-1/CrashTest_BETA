@@ -1,4 +1,4 @@
-package com.example.josep.testingthedrawerlayout;
+package com.nitc.crash.detectionapp;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -9,13 +9,7 @@ import android.content.Context;
 
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.location.LocationManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
